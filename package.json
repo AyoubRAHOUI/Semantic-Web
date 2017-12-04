@@ -10,7 +10,8 @@
     "express": "^4.16.2",
     "requestify": "^0.2.5",
     "xmldom": "^0.1.27",
-    "xpath": "0.0.26"
+    "xpath": "0.0.26",
+    "google-search-scraper": "*"
   },
   "devDependencies": {},
   "scripts": {

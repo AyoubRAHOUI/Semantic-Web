@@ -7,6 +7,8 @@ var xpath = require('xpath');
 var dom = require('xmldom').DOMParser;
 var QueryString = require('querystring');
 
+var scraper = require('google-search-scraper');
+ 
 
 var app = express();
 
@@ -42,14 +44,35 @@ app.use(session({secret: 'topsecret'}))
 
 	//Si la recherche n'est pas vide
     if (req.body.query && req.body.query.length > 0) {
+		
+		
+		var options = {
+		  query: req.body.query,
+		  limit: 10
+		};
+		var results = []
+		
+		scraper.search(options, function(err, url) {
+		  // This is called for each result 
+		  if(err) throw err;
+		  results.push(url);
+		  //console.log(url)
+		})
+		.then(function (response) {
+			console.log(results)
+			res.json({urls: results});
+		});
+		
+		
+		
+		
         // Le replace va changer les espaces par des plus et les & par des &amp avec un regex
-        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace
         var query = req.body.query.replace(/ /g, '+').replace(/&/g, '&amp;');
 
         requestify
         // Start est l'offset dans les résultats de recherche, pas le numéro de page
         // Pour récupérer la 2e page : start = 10 (car 10 resultats par pages)
-            .get('https://www.google.fr/search?q='+ query +'&start=10')
+            .get('https://www.google.fr/search?q='+ query +'&start=0')
             .then(function (response) {
                 if (response.code === 200) {
                     // On doit transformer la chaîne en caractère en représentation en arbre du html/xml : le DOM
@@ -87,6 +110,7 @@ app.use(session({secret: 'topsecret'}))
                     res.json({success: true, urls: sanitizedValues});
                 }
             });
+			
     } else {
         res.json({success: false, error: "Invalid query parameters"});
     }
