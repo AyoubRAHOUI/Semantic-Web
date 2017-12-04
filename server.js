@@ -12,6 +12,7 @@ var scraper = require('google-search-scraper');
 
 var app = express();
 
+
 const PORT = 8080;
 
 /* On utilise les sessions */
@@ -34,9 +35,11 @@ app.use(session({secret: 'topsecret'}))
     next();
 })
 
+.use(express.static(__dirname + '/views'))
+
 /* On affiche la page HTML avec ejs*/
 .get('/search', function(req, res) { 
-    res.render('index.ejs');
+    res.render('ws.ejs');
 })
 
 /* On fait le POST */
@@ -45,7 +48,7 @@ app.use(session({secret: 'topsecret'}))
 	//Si la recherche n'est pas vide
     if (req.body.query && req.body.query.length > 0) {
 		
-		
+		/*
 		var options = {
 		  query: req.body.query,
 		  limit: 10
@@ -63,7 +66,7 @@ app.use(session({secret: 'topsecret'}))
 			res.json({urls: results});
 		});
 		
-		
+		*/
 		
 		
         // Le replace va changer les espaces par des plus et les & par des &amp avec un regex
