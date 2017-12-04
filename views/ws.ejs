@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Recherche des filmes</title>
+		<link rel="stylesheet" type="text/css"  href="ws.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.3/css/tether-theme-arrows-dark.min.css">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.3/js/tether.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css">
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"></script>
+	</head>
+	<body>
+		<nav class="navbar navbar-dark bg-dark justify-content-between inline w-100">
+			<h1 class="header inline">Projet de Web Semantique</h1>
+			<form class="form-inline inline" action="/search/new/" method="post">
+				<input class="form-control mr-sm-2" type="text" placeholder="Look for a movie" aria-label="Search" name="query" id="query" autofocus>
+				<button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+			</form>
+		</nav>
+		
+		<div class="result container w-100 h-100 pt-2 inline">
+			<div class="image inline">
+				<img src = "https://pcpartpicker.com/static/forever/img/no-image.png" />
+			</div>
+			<div class="container inline" id="title">
+				<h3>Title</h3>
+			</div>
+		</div>
+		
+	</body>
+</html>

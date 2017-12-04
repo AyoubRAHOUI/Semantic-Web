@@ -1,0 +1,16 @@
+nav {
+	background-color : black;
+}
+
+.header {
+	color : white;
+	display: inline-block;
+}
+
+.inline {
+	display: inline-block !important;
+}
+
+.form-inline {
+	align: right;
+}
