@@ -7,8 +7,9 @@ nav {
 	display: inline-block;
 }
 
-.inline {
-	display: inline-block !important;
+.flex {
+	display: flex;
+	flex-direction: row !important;
 }
 
 .form-inline {
