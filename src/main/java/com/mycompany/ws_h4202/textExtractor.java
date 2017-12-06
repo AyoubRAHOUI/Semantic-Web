@@ -49,6 +49,12 @@ public class textExtractor {
         AnalysisResults results;
         results = service.analyze(parameters).execute();
         System.out.println(results.getAnalyzedText());
+        
+        try{ 
+          enregistrerResultat(results.getAnalyzedText());
+        }catch(IOException e){
+         e.printStackTrace();
+        }
         return results.getAnalyzedText();
 
     }
