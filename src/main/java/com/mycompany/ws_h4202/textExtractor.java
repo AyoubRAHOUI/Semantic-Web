@@ -11,14 +11,15 @@ import com.ibm.watson.developer_cloud.natural_language_understanding.v1.model.An
 import com.ibm.watson.developer_cloud.natural_language_understanding.v1.model.ConceptsOptions;
 import com.ibm.watson.developer_cloud.natural_language_understanding.v1.model.EntitiesOptions;
 import com.ibm.watson.developer_cloud.natural_language_understanding.v1.model.Features;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-
 
 /**
  *
@@ -30,12 +31,12 @@ public class textExtractor {
             NaturalLanguageUnderstanding.VERSION_DATE_2017_02_27,
             "1dfadf0e-f20e-41f2-a58a-225c2fc682ae",
             "J8jyS4y20zyq");
-    public static int number =0;
+    public static int number = 0;
 
     private static EntitiesOptions entities = new EntitiesOptions.Builder().limit(1).sentiment(true).build();
     private static ConceptsOptions concepts = new ConceptsOptions.Builder().limit(5).build();
 
-    public static String ExtractTextUrl(String url) {
+    public static String ExtractTextUrl(String url) throws Exception {
         System.out.println("Request to watson on " + url);
         Features features = new Features.Builder().concepts(concepts).build();
         AnalyzeOptions parameters
@@ -45,37 +46,50 @@ public class textExtractor {
                         .returnAnalyzedText(true)
                         .language("ENGLISH")
                         .build();
+        String res = "";
+        try {
+            AnalysisResults results;
+            results = service.analyze(parameters).execute();
+            System.out.println(results.getAnalyzedText());
 
-        AnalysisResults results;
-        results = service.analyze(parameters).execute();
-        System.out.println(results.getAnalyzedText());
-        
-        try{ 
-          enregistrerResultat(results.getAnalyzedText());
-        }catch(IOException e){
-         e.printStackTrace();
+            enregistrerResultat(results.getAnalyzedText());
+
+            res = results.getAnalyzedText();
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return results.getAnalyzedText();
+
+        return res;
 
     }
-    public static int numb (){
-       number++;
-       return number;
+
+    public static int numb() {
+        number++;
+        return number;
     }
-    public static String chargerResultat(int i) throws IOException, ClassNotFoundException {
-         FileInputStream fileInput = new FileInputStream("Result "+i);
-         ObjectInputStream objectInput = new ObjectInputStream(fileInput);
-         String contenu = (String) objectInput.readObject();
-         objectInput.close();
-         return contenu;
-     }
-       public static void enregistrerResultat(String text) throws IOException{
-         int i= numb();
-         BufferedWriter bufferedWriter = new BufferedWriter (new FileWriter( "Result "+i ));
-         FileOutputStream fileOutput = new FileOutputStream("Result "+i);
-         ObjectOutputStream objectOutput = new ObjectOutputStream(fileOutput);
-         objectOutput.writeObject(text);
-         objectOutput.close();
-      }
+
+    public static String chargerResultat(int i) {
+        String contenu = "";
+        try (BufferedReader br = new BufferedReader(new FileReader("Result " + i + ".txt"))) {
+
+            String sCurrentLine;
+            while ((sCurrentLine = br.readLine()) != null) {
+                contenu += sCurrentLine;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return contenu;
+    }
+
+    public static void enregistrerResultat(String text) {
+        int i = numb();
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("Result " + i + ".txt"))) {
+            bw.write(text);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 }

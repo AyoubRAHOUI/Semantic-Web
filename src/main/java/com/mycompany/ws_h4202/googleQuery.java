@@ -10,9 +10,16 @@ package com.mycompany.ws_h4202;
  * @author DELL
  */
 import static com.mycompany.ws_h4202.textExtractor.ExtractTextUrl;
+import static com.mycompany.ws_h4202.textExtractor.numb;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -30,18 +37,26 @@ public class googleQuery {
 
     public static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0 Chrome/61.0.3163.100 Safari/537.36";
 
-        public static List<String> getLinks(String query, int offset) throws Exception {
+    public static void save(String txt) throws IOException {
+        try (FileWriter file = new FileWriter("Liens.txt")) {
+			file.write(txt);
+			System.out.println("Successfully Copied to File");
+		}
+    }
+
+    public static List<String> getLinks(String query, int offset) throws Exception {
         String API_KEY = "AIzaSyDB21zsab_XJO8Vb8XZFGJYl8kuak-TGa4";
         String charset = "UTF-8";
-        
+
         StringBuilder result = new StringBuilder();
         URL url;
-        
+
         if (offset > 0) {
-            url = new URL("https://www.googleapis.com/customsearch/v1?key=" + API_KEY + "&cx=013036536707430787589:_pqjad5hr1a&q="+ URLEncoder.encode(query, charset) + "&hl=en&alt=json&start=" + offset);
+            url = new URL("https://www.googleapis.com/customsearch/v1?key=" + API_KEY + "&cx=013036536707430787589:_pqjad5hr1a&q=" + URLEncoder.encode(query, charset) + "&hl=en&alt=json&start=" + offset);
         } else {
-            url = new URL("https://www.googleapis.com/customsearch/v1?key=" + API_KEY + "&cx=013036536707430787589:_pqjad5hr1a&q="+ URLEncoder.encode(query, charset) + "&hl=en&alt=json");
-        }HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            url = new URL("https://www.googleapis.com/customsearch/v1?key=" + API_KEY + "&cx=013036536707430787589:_pqjad5hr1a&q=" + URLEncoder.encode(query, charset) + "&hl=en&alt=json");
+        }
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
         BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
         String line;
@@ -53,23 +68,24 @@ public class googleQuery {
         JSONParser parser = new JSONParser();
         JSONObject json = (JSONObject) parser.parse(result.toString());
         JSONArray jArray = (JSONArray) json.get("items");
-        
-        List<String> urlList = new ArrayList<>();
-        
-        Iterator i = jArray.iterator();
 
+        List<String> urlList = new ArrayList<>();
+
+        Iterator i = jArray.iterator();
+        String s = "";
         while (i.hasNext()) {
             JSONObject res = (JSONObject) i.next();
             String link = (String) res.get("link");
+            
+            s += "\n" + link;
+            
             System.out.println(link);
             urlList.add(link);
         }
-        
-        
-
+        save(s);
         return urlList;
     }
-    
+
     public static List<String> getUrls(String userSearch, int offset) throws IOException {
 
         String query = userSearch.replaceAll("\\s+", "+");
@@ -97,18 +113,15 @@ public class googleQuery {
     public static void main(String[] args) throws Exception {
 
         List<String> urlList = new ArrayList<>();
-        
+
         /* getLinks et getUrls font la même chose, mais de deux manières différentes */
-        
-        urlList =getLinks("hunger games", 10);
+        urlList = getLinks("hunger games", 10);
         //urlList = getUrls("hunger games", 10);
         System.out.println(">>>-------------------------------------<<<");
-        for (int i=0; i<urlList.size(); i++){
-           ExtractTextUrl(urlList.get(i)); 
-           System.out.println(">---------------------------<");
+        for (int i = 0; i < urlList.size(); i++) {
+            ExtractTextUrl(urlList.get(i));
+            System.out.println(">---------------------------<");
         }
-        
-        
 
     }
 
