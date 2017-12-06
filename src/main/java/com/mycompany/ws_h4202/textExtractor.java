@@ -22,6 +22,7 @@ public class textExtractor {
             NaturalLanguageUnderstanding.VERSION_DATE_2017_02_27,
             "1dfadf0e-f20e-41f2-a58a-225c2fc682ae",
             "J8jyS4y20zyq");
+    public static int number =0;
 
     private static EntitiesOptions entities = new EntitiesOptions.Builder().limit(1).sentiment(true).build();
     private static ConceptsOptions concepts = new ConceptsOptions.Builder().limit(5).build();
@@ -43,5 +44,24 @@ public class textExtractor {
         return results.getAnalyzedText();
 
     }
+    public static int numb (){
+       number++;
+       return number;
+    }
+    public static String chargerResultat(int i) throws IOException, ClassNotFoundException {
+         FileInputStream fileInput = new FileInputStream("Result "+i);
+         ObjectInputStream objectInput = new ObjectInputStream(fileInput);
+         String contenu = (String) objectInput.readObject();
+         objectInput.close();
+         return contenu;
+     }
+       public static void enregistrerResultat(String text) throws IOException{
+         int i= numb();
+         BufferedWriter bufferedWriter = new BufferedWriter (new FileWriter( "Result "+i ));
+         FileOutputStream fileOutput = new FileOutputStream("Result "+i);
+         ObjectOutputStream objectOutput = new ObjectOutputStream(fileOutput);
+         objectOutput.writeObject(text);
+         objectOutput.close();
+      }
 
 }
