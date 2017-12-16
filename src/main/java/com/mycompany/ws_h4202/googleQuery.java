@@ -10,16 +10,11 @@ package com.mycompany.ws_h4202;
  * @author DELL
  */
 import static com.mycompany.ws_h4202.textExtractor.ExtractTextUrl;
-import static com.mycompany.ws_h4202.textExtractor.numb;
+import java.net.URI;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -85,6 +80,35 @@ public class googleQuery {
         save(s);
         return urlList;
     }
+    
+    public static String getDBpedia(String query, double confidence, int support) throws Exception {
+
+        StringBuilder result = new StringBuilder(); 
+        URL url;
+        URI uri = new URI(
+        "http", 
+        "model.dbpedia-spotlight.org", 
+        "/en/annotate",
+        "text=" + query + "&confidence=" + confidence + "&support=" + support,
+        null);
+        String request = uri.toASCIIString();
+        
+        url = new URL(request);
+        
+        System.out.println(url.toString());
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+        BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        String line;
+        while ((line = rd.readLine()) != null) {
+            result.append(line);
+        }
+        rd.close();
+
+        System.out.println(result.toString());
+        
+        return result.toString();
+    }
 
     public static List<String> getUrls(String userSearch, int offset) throws IOException {
 
@@ -118,10 +142,13 @@ public class googleQuery {
         urlList = getLinks("hunger games", 10);
         //urlList = getUrls("hunger games", 10);
         System.out.println(">>>-------------------------------------<<<");
-        for (int i = 0; i < urlList.size(); i++) {
-            ExtractTextUrl(urlList.get(i));
-            System.out.println(">---------------------------<");
-        }
+//        for (int i = 0; i < urlList.size(); i++) {
+//            ExtractTextUrl(urlList.get(i));
+//            System.out.println(">---------------------------<");
+//        }
+        String res =ExtractTextUrl(urlList.get(2));
+        
+        getDBpedia(res, 0.2, 20);
 
     }
 

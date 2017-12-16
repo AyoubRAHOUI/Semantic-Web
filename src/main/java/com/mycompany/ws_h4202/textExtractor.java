@@ -50,7 +50,7 @@ public class textExtractor {
         try {
             AnalysisResults results;
             results = service.analyze(parameters).execute();
-            System.out.println(results.getAnalyzedText());
+            //System.out.println(results.getAnalyzedText());
 
             enregistrerResultat(results.getAnalyzedText());
 

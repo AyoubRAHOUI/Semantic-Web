@@ -21,6 +21,18 @@
             <artifactId>org.json.simple</artifactId>
             <version>0.4</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.5</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.kie.modules</groupId>
+            <artifactId>org-apache-commons-httpclient</artifactId>
+            <version>6.2.0.CR2</version>
+            <type>pom</type>
+        </dependency>
     </dependencies>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
