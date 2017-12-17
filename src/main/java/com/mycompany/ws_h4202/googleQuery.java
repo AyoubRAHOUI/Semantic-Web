@@ -10,6 +10,7 @@ package com.mycompany.ws_h4202;
  * @author DELL
  */
 import static com.mycompany.ws_h4202.textExtractor.ExtractTextUrl;
+import static com.mycompany.ws_h4202.textExtractor.enregistrerResultat;
 import java.net.URI;
 import java.io.BufferedReader;
 import java.io.FileWriter;
@@ -81,8 +82,17 @@ public class googleQuery {
         return urlList;
     }
     
-    public static String getDBpedia(String query, double confidence, int support) throws Exception {
-
+    public static String getDBpedia(String text, double confidence, int support) throws Exception {
+        
+        String query;
+        String noNewLine = text.replace("\n", "").replace("\r", "").trim();
+        if (noNewLine.length()>1600){
+            query = noNewLine.substring(0, 1600);
+        } else {
+            query = noNewLine;
+        }
+                
+        
         StringBuilder result = new StringBuilder(); 
         URL url;
         URI uri = new URI(
@@ -105,6 +115,7 @@ public class googleQuery {
         }
         rd.close();
 
+        enregistrerResultat(result.toString());
         System.out.println(result.toString());
         
         return result.toString();
@@ -142,13 +153,15 @@ public class googleQuery {
         urlList = getLinks("hunger games", 10);
         //urlList = getUrls("hunger games", 10);
         System.out.println(">>>-------------------------------------<<<");
-//        for (int i = 0; i < urlList.size(); i++) {
-//            ExtractTextUrl(urlList.get(i));
-//            System.out.println(">---------------------------<");
-//        }
-        String res =ExtractTextUrl(urlList.get(2));
-        
-        getDBpedia(res, 0.2, 20);
+        for (int i = 0; i < urlList.size(); i++) {
+            try {
+                String res = ExtractTextUrl(urlList.get(i));
+                getDBpedia(res, 0.2, 20);
+            } catch (Exception e) {
+            e.printStackTrace();
+            }
+            System.out.println(">---------------------------<");
+        }  
 
     }
 
