@@ -33,6 +33,12 @@
             <version>6.2.0.CR2</version>
             <type>pom</type>
         </dependency>
+        <dependency>
+            <groupId>org.apache.jena</groupId>
+            <artifactId>apache-jena</artifactId>
+            <version>3.4.0</version>
+            <type>zip</type>
+        </dependency>
     </dependencies>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
