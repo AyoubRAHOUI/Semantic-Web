@@ -10,18 +10,26 @@ package com.mycompany.ws_h4202;
  * @author DELL
  */
 import static com.mycompany.ws_h4202.textExtractor.ExtractTextUrl;
-import static com.mycompany.ws_h4202.textExtractor.enregistrerResultat;
 import java.net.URI;
 import java.io.BufferedReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import org.apache.http.HttpResponse;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -78,47 +86,48 @@ public class googleQuery {
             System.out.println(link);
             urlList.add(link);
         }
-        save(s);
+//        save(s);
         return urlList;
     }
-    
-    public static String getDBpedia(String text, double confidence, int support) throws Exception {
+    public static String getLinkDBpedia(String query, double confidence, int support) throws URISyntaxException {
         
-        String query;
-        String noNewLine = text.replace("\n", "").replace("\r", "").trim();
-        if (noNewLine.length()>1600){
-            query = noNewLine.substring(0, 1600);
-        } else {
-            query = noNewLine;
-        }
-                
-        
-        StringBuilder result = new StringBuilder(); 
-        URL url;
         URI uri = new URI(
-        "http", 
-        "model.dbpedia-spotlight.org", 
-        "/en/annotate",
-        "text=" + query + "&confidence=" + confidence + "&support=" + support,
-        null);
-        String request = uri.toASCIIString();
+            "http", 
+            "model.dbpedia-spotlight.org", 
+            "/en/annotate",
+            "text=" + query + "&confidence=" + confidence + "&support=" + support,
+            null);
         
-        url = new URL(request);
+        return uri.toASCIIString();        
+    }
+    
+    public static JSONObject getDBpedia(String query, double confidence, int support) throws Exception {
+           
+        URL url = new URL(getLinkDBpedia(query, confidence, support));
         
         System.out.println(url.toString());
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("GET");
-        BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        String line;
-        while ((line = rd.readLine()) != null) {
-            result.append(line);
-        }
-        rd.close();
-
-        enregistrerResultat(result.toString());
-        System.out.println(result.toString());
         
-        return result.toString();
+        CloseableHttpClient client = HttpClientBuilder.create().build();
+        HttpPost request = new HttpPost(url.toString());
+        request.addHeader("Accept", "application/json");
+        
+        // Create some NameValuePair for HttpPost parameters
+        List<NameValuePair> arguments = new ArrayList<>(3);
+        arguments.add(new BasicNameValuePair("text", query));
+        arguments.add(new BasicNameValuePair("confidence", Double.toString(confidence)));
+        arguments.add(new BasicNameValuePair("support", Integer.toString(support)));
+        
+        request.setEntity(new UrlEncodedFormEntity(arguments));
+        HttpResponse response = client.execute(request);
+        
+        String result = EntityUtils.toString(response.getEntity());
+        
+        JSONParser parser = new JSONParser();
+        JSONObject json = (JSONObject) parser.parse(result);
+   
+        System.out.println(json.toJSONString());
+        
+        return json;
     }
 
     public static List<String> getUrls(String userSearch, int offset) throws IOException {
@@ -153,16 +162,14 @@ public class googleQuery {
         urlList = getLinks("hunger games", 10);
         //urlList = getUrls("hunger games", 10);
         System.out.println(">>>-------------------------------------<<<");
-        for (int i = 0; i < urlList.size(); i++) {
-            try {
-                String res = ExtractTextUrl(urlList.get(i));
-                getDBpedia(res, 0.2, 20);
-            } catch (Exception e) {
-            e.printStackTrace();
-            }
-            System.out.println(">---------------------------<");
-        }  
+//        for (int i = 0; i < urlList.size(); i++) {
+//            ExtractTextUrl(urlList.get(i));
+//            System.out.println(">---------------------------<");
+//        }
+        String res =ExtractTextUrl(urlList.get(2));
+        
+        getDBpedia(res, 0.2, 20);
 
     }
 
-}
+ }
